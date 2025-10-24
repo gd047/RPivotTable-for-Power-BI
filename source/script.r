@@ -6,6 +6,23 @@ libraryRequireInstall("jsonlite");
 libraryRequireInstall("rpivotTable");
 ####################################################
 
+############### UTF-8 Encoding Setup ###############
+# Ορισμός UTF-8 encoding για σωστή εμφάνιση ελληνικών χαρακτήρων
+Sys.setlocale("LC_CTYPE", "en_US.UTF-8")
+
+# Διάβασε τα Values με σωστό encoding
+if(exists("Values")) {
+  # Μετατροπή όλων των character columns σε UTF-8
+  Values <- as.data.frame(lapply(Values, function(x) {
+    if(is.character(x) || is.factor(x)) {
+      iconv(as.character(x), to = "UTF-8")
+    } else {
+      x
+    }
+  }), stringsAsFactors = FALSE)
+}
+####################################################
+
 ################### Actual code ####################
 initial_renderer <- "Table";
 initial_agg <- "Count";
@@ -57,4 +74,17 @@ p$sizingPolicy$browser$padding = 0
 
 ############# Create and save widget ###############
 internalSaveWidget(p, 'out.html');
+
+# Διόρθωση του HTML για UTF-8 encoding
+html_content <- readLines('out.html', encoding = "UTF-8", warn = FALSE)
+# Προσθήκη UTF-8 meta tag αν δεν υπάρχει
+if(!any(grepl("charset.*utf-8", html_content, ignore.case = TRUE))) {
+  meta_line <- which(grepl("<head>", html_content, ignore.case = TRUE))
+  if(length(meta_line) > 0) {
+    html_content <- append(html_content,
+      '<meta charset="UTF-8">',
+      after = meta_line[1])
+  }
+}
+writeLines(html_content, 'out.html', useBytes = TRUE)
 ####################################################
