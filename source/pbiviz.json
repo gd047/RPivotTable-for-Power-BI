@@ -4,12 +4,12 @@
     "displayName": "R Pivot Table",
     "guid": "rPivotTable8B3D024D64314B469FFC4852A7ACBD5F",
     "visualClassName": "Visual",
-    "version": "1.0.2.5",
-    "description": "R Pivot Table from BlueGranite",
+    "version": "1.0.2.7",
+    "description": "R Pivot Table from BlueGranite - UTF-8 Greek encoding fix",
     "supportUrl": "https://deldersveld.github.io/powerbi/support/r-pivot-table",
     "gitHubUrl": "https://github.com/BlueGranite/RPivotTable-for-Power-BI"
   },
-  "apiVersion": "1.10.0",
+  "apiVersion": "1.13.0",
   "author": {
     "name": "BlueGranite",
     "email": "support@blue-granite.com"
@@ -17,9 +17,6 @@
   "assets": {
     "icon": "assets/icon.png"
   },
-  "externalJS": [
-    "node_modules/powerbi-visuals-utils-dataviewutils/lib/index.js"
-  ],
   "style": "style/visual.less",
   "capabilities": "capabilities.json",
   "dependencies": "dependencies.json",

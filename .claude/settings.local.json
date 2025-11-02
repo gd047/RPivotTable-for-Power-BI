@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pbiviz package:*)",
+      "Bash(pbiviz --help:*)",
+      "Bash(unzip:*)",
+      "Bash(python update_package.py:*)",
+      "Bash(python repackage.py:*)",
+      "Bash(python repackage_uncompressed.py:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -22,9 +22,9 @@ FlattenHTML <- function(fnameIn, fnameOut)
   
   if(!file.exists(fnameIn))
     return(FALSE)
-  
+
   dir = dirname(fnameIn)
-  html = htmlTreeParse(fnameIn, useInternal = TRUE)
+  html = htmlTreeParse(fnameIn, useInternal = TRUE, encoding = "UTF-8")
   top = xmlRoot(html)
   
   # extract all <script> tags with src value
@@ -64,7 +64,7 @@ FlattenHTML <- function(fnameIn, fnameOut)
     }
   }
   
-  saveXML(html, file = fnameOut)
+  saveXML(html, file = fnameOut, encoding = "UTF-8")
   return(TRUE)
 }
 
@@ -85,9 +85,9 @@ ReadFullFile <- function(fname)
 {
   if(!file.exists(fname))
     return(NULL)
-  
-  con = file(fname, open = "r")
-  data = readLines(con)
+
+  con = file(fname, open = "r", encoding = "UTF-8")
+  data = readLines(con, encoding = "UTF-8")
   close(con)
   return(data)
 }

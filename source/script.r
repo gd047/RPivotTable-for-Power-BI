@@ -8,18 +8,36 @@ libraryRequireInstall("rpivotTable");
 
 ############### UTF-8 Encoding Setup ###############
 # Ορισμός UTF-8 encoding για σωστή εμφάνιση ελληνικών χαρακτήρων
-Sys.setlocale("LC_CTYPE", "en_US.UTF-8")
+Sys.setlocale("LC_ALL", "en_US.UTF-8")
+options(encoding = "UTF-8")
 
 # Διάβασε τα Values με σωστό encoding
 if(exists("Values")) {
   # Μετατροπή όλων των character columns σε UTF-8
   Values <- as.data.frame(lapply(Values, function(x) {
     if(is.character(x) || is.factor(x)) {
-      iconv(as.character(x), to = "UTF-8")
+      # Προσπάθεια μετατροπής από διάφορα encodings
+      result <- tryCatch({
+        # Δοκιμή να μετατρέψουμε από Windows-1253 (Greek Windows encoding)
+        converted <- iconv(as.character(x), from = "CP1253", to = "UTF-8")
+        # Αν επιστρέψει NA, δοκιμάζουμε με το τρέχον encoding
+        if(all(is.na(converted))) {
+          iconv(as.character(x), to = "UTF-8")
+        } else {
+          converted
+        }
+      }, error = function(e) {
+        # Αν αποτύχει, απλά μετατρέπουμε σε UTF-8
+        iconv(as.character(x), to = "UTF-8")
+      })
+      result
     } else {
       x
     }
   }), stringsAsFactors = FALSE)
+
+  # Διατήρηση των ονομάτων των στηλών με UTF-8 encoding
+  colnames(Values) <- iconv(colnames(Values), to = "UTF-8")
 }
 ####################################################
 
@@ -76,7 +94,10 @@ p$sizingPolicy$browser$padding = 0
 internalSaveWidget(p, 'out.html');
 
 # Διόρθωση του HTML για UTF-8 encoding
-html_content <- readLines('out.html', encoding = "UTF-8", warn = FALSE)
+html_file <- file('out.html', open = "r", encoding = "UTF-8")
+html_content <- readLines(html_file, encoding = "UTF-8", warn = FALSE)
+close(html_file)
+
 # Προσθήκη UTF-8 meta tag αν δεν υπάρχει
 if(!any(grepl("charset.*utf-8", html_content, ignore.case = TRUE))) {
   meta_line <- which(grepl("<head>", html_content, ignore.case = TRUE))
@@ -86,5 +107,9 @@ if(!any(grepl("charset.*utf-8", html_content, ignore.case = TRUE))) {
       after = meta_line[1])
   }
 }
-writeLines(html_content, 'out.html', useBytes = TRUE)
+
+# Εγγραφή με UTF-8 encoding
+html_out <- file('out.html', open = "w", encoding = "UTF-8")
+writeLines(html_content, html_out, useBytes = FALSE)
+close(html_out)
 ####################################################
