@@ -9,7 +9,7 @@
     "supportUrl": "https://deldersveld.github.io/powerbi/support/r-pivot-table",
     "gitHubUrl": "https://github.com/BlueGranite/RPivotTable-for-Power-BI"
   },
-  "apiVersion": "1.10.0",
+  "apiVersion": "1.13.0",
   "author": {
     "name": "BlueGranite",
     "email": "support@blue-granite.com"
@@ -17,9 +17,6 @@
   "assets": {
     "icon": "assets/icon.png"
   },
-  "externalJS": [
-    "node_modules/powerbi-visuals-utils-dataviewutils/lib/index.js"
-  ],
   "style": "style/visual.less",
   "capabilities": "capabilities.json",
   "dependencies": "dependencies.json",
