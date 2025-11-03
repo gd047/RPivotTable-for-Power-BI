@@ -123,43 +123,21 @@ libraryRequireInstall("jsonlite");
 libraryRequireInstall("rpivotTable");
 ####################################################
 
-############### HTML Entity Encoding for Greek Characters ###############
-# Function to convert characters to HTML numeric entities
-# This solves the encoding problem by making Greek characters pure ASCII
-toHtmlEntities <- function(str) {
-  if(is.na(str) || is.null(str) || nchar(str) == 0) return(str)
+############### UTF-8 Encoding Setup ###############
+# Ensure UTF-8 locale
+Sys.setlocale("LC_ALL", "en_US.UTF-8")
 
-  # Convert string to UTF-8 to ensure proper encoding
-  str <- enc2utf8(as.character(str))
-
-  # Split into individual characters
-  chars <- strsplit(str, "")[[1]]
-
-  # Convert each character to HTML entity if it's non-ASCII (code > 127)
-  result <- sapply(chars, function(ch) {
-    code <- utf8ToInt(ch)
-    if(code > 127) {
-      paste0("&#", code, ";")
-    } else {
-      ch
-    }
-  })
-
-  paste(result, collapse = "")
-}
-
-# Apply HTML entity encoding to all Values
+# Ensure data is in UTF-8
 if(exists("Values")) {
   Values <- as.data.frame(lapply(Values, function(x) {
     if(is.character(x) || is.factor(x)) {
-      sapply(as.character(x), toHtmlEntities, USE.NAMES = FALSE)
+      enc2utf8(as.character(x))
     } else {
       x
     }
   }), stringsAsFactors = FALSE)
 
-  # Also encode column names
-  colnames(Values) <- sapply(colnames(Values), toHtmlEntities, USE.NAMES = FALSE)
+  colnames(Values) <- enc2utf8(colnames(Values))
 }
 ####################################################
 
@@ -214,4 +192,34 @@ p$sizingPolicy$browser$padding = 0
 
 ############# Create and save widget ###############
 internalSaveWidget(p, 'out.html');
+
+# Post-process HTML to convert UTF-8 characters to HTML entities
+# This is done AFTER rpivotTable rendering to avoid escaping issues
+html_content <- readLines('out.html', encoding = "UTF-8", warn = FALSE)
+
+# Function to convert non-ASCII characters to HTML entities in a string
+convertToEntities <- function(text) {
+  if(length(text) == 0 || is.na(text)) return(text)
+
+  # Split into characters
+  chars <- strsplit(text, "")[[1]]
+
+  # Convert each character
+  result <- sapply(chars, function(ch) {
+    code <- utf8ToInt(ch)
+    if(code > 127) {
+      paste0("&#", code, ";")
+    } else {
+      ch
+    }
+  }, USE.NAMES = FALSE)
+
+  paste(result, collapse = "")
+}
+
+# Convert each line
+html_content <- sapply(html_content, convertToEntities, USE.NAMES = FALSE)
+
+# Write back with UTF-8 encoding and proper meta tag
+writeLines(html_content, 'out.html', useBytes = FALSE)
 ####################################################
