@@ -1,0 +1,26 @@
+# Node modules
+node_modules/
+source/node_modules/
+
+# Build artifacts
+source/.tmp/
+source/dist/*.html
+source/webpack.statistics.*.html
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Certificates
+*.pfx
+*.crt
+*.key
+pbiviz-certs/
+
+# Logs
+*.log
+npm-debug.log*
