@@ -4,8 +4,8 @@
     "displayName": "R Pivot Table",
     "guid": "rPivotTable8B3D024D64314B469FFC4852A7ACBD5F",
     "visualClassName": "Visual",
-    "version": "1.0.2.10",
-    "description": "R Pivot Table from BlueGranite - Greek characters with post-render HTML entities",
+    "version": "1.0.2.11",
+    "description": "R Pivot Table from BlueGranite - Greek characters fixed (unescape HTML entities)",
     "supportUrl": "https://deldersveld.github.io/powerbi/support/r-pivot-table",
     "gitHubUrl": "https://github.com/BlueGranite/RPivotTable-for-Power-BI"
   },

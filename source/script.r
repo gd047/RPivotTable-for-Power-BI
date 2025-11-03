@@ -222,4 +222,11 @@ html_content <- sapply(html_content, convertToEntities, USE.NAMES = FALSE)
 
 # Write back with UTF-8 encoding and proper meta tag
 writeLines(html_content, 'out.html', useBytes = FALSE)
+
+# Fix double-escaped HTML entities caused by saveXML()
+# saveXML() escapes & to &amp;, so &#931; becomes &amp;#931;
+# This step unescapes them back to proper HTML entities
+html_final <- readLines('out.html', encoding = "UTF-8", warn = FALSE)
+html_final <- gsub("&amp;#(\\d+);", "&#\\1;", html_final)
+writeLines(html_final, 'out.html', useBytes = FALSE)
 ####################################################
