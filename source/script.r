@@ -123,6 +123,46 @@ libraryRequireInstall("jsonlite");
 libraryRequireInstall("rpivotTable");
 ####################################################
 
+############### HTML Entity Encoding for Greek Characters ###############
+# Function to convert characters to HTML numeric entities
+# This solves the encoding problem by making Greek characters pure ASCII
+toHtmlEntities <- function(str) {
+  if(is.na(str) || is.null(str) || nchar(str) == 0) return(str)
+
+  # Convert string to UTF-8 to ensure proper encoding
+  str <- enc2utf8(as.character(str))
+
+  # Split into individual characters
+  chars <- strsplit(str, "")[[1]]
+
+  # Convert each character to HTML entity if it's non-ASCII (code > 127)
+  result <- sapply(chars, function(ch) {
+    code <- utf8ToInt(ch)
+    if(code > 127) {
+      paste0("&#", code, ";")
+    } else {
+      ch
+    }
+  })
+
+  paste(result, collapse = "")
+}
+
+# Apply HTML entity encoding to all Values
+if(exists("Values")) {
+  Values <- as.data.frame(lapply(Values, function(x) {
+    if(is.character(x) || is.factor(x)) {
+      sapply(as.character(x), toHtmlEntities, USE.NAMES = FALSE)
+    } else {
+      x
+    }
+  }), stringsAsFactors = FALSE)
+
+  # Also encode column names
+  colnames(Values) <- sapply(colnames(Values), toHtmlEntities, USE.NAMES = FALSE)
+}
+####################################################
+
 ################### Actual code ####################
 initial_renderer <- "Table";
 initial_agg <- "Count";
