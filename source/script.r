@@ -123,24 +123,6 @@ libraryRequireInstall("jsonlite");
 libraryRequireInstall("rpivotTable");
 ####################################################
 
-############### UTF-8 Encoding Setup ###############
-# Ensure UTF-8 locale
-Sys.setlocale("LC_ALL", "en_US.UTF-8")
-
-# Ensure data is in UTF-8
-if(exists("Values")) {
-  Values <- as.data.frame(lapply(Values, function(x) {
-    if(is.character(x) || is.factor(x)) {
-      enc2utf8(as.character(x))
-    } else {
-      x
-    }
-  }), stringsAsFactors = FALSE)
-
-  colnames(Values) <- enc2utf8(colnames(Values))
-}
-####################################################
-
 ################### Actual code ####################
 initial_renderer <- "Table";
 initial_agg <- "Count";
@@ -192,41 +174,4 @@ p$sizingPolicy$browser$padding = 0
 
 ############# Create and save widget ###############
 internalSaveWidget(p, 'out.html');
-
-# Post-process HTML to convert UTF-8 characters to HTML entities
-# This is done AFTER rpivotTable rendering to avoid escaping issues
-html_content <- readLines('out.html', encoding = "UTF-8", warn = FALSE)
-
-# Function to convert non-ASCII characters to HTML entities in a string
-convertToEntities <- function(text) {
-  if(length(text) == 0 || is.na(text)) return(text)
-
-  # Split into characters
-  chars <- strsplit(text, "")[[1]]
-
-  # Convert each character
-  result <- sapply(chars, function(ch) {
-    code <- utf8ToInt(ch)
-    if(code > 127) {
-      paste0("&#", code, ";")
-    } else {
-      ch
-    }
-  }, USE.NAMES = FALSE)
-
-  paste(result, collapse = "")
-}
-
-# Convert each line
-html_content <- sapply(html_content, convertToEntities, USE.NAMES = FALSE)
-
-# Write back with UTF-8 encoding and proper meta tag
-writeLines(html_content, 'out.html', useBytes = FALSE)
-
-# Fix double-escaped HTML entities caused by saveXML()
-# saveXML() escapes & to &amp;, so &#931; becomes &amp;#931;
-# This step unescapes them back to proper HTML entities
-html_final <- readLines('out.html', encoding = "UTF-8", warn = FALSE)
-html_final <- gsub("&amp;#(\\d+);", "&#\\1;", html_final)
-writeLines(html_final, 'out.html', useBytes = FALSE)
 ####################################################

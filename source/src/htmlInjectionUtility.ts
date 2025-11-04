@@ -40,6 +40,7 @@ module powerbi.extensibility.visual {
         };
       }
     }
+    // eslint-disable-next-line powerbi-visuals/no-inner-outer-html
     script.innerHTML = refNode.innerHTML;
     return script;
   }

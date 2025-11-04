@@ -193,6 +193,7 @@ module powerbi.extensibility.visual {
             // create 'virtual' HTML, so parsing is easier
             let el: HTMLHtmlElement = document.createElement("html");
             try {
+                // eslint-disable-next-line powerbi-visuals/no-inner-outer-html
                 el.innerHTML = window.atob(payloadBase64);
             } catch (err) {
                 return;
@@ -205,7 +206,7 @@ module powerbi.extensibility.visual {
                     let tempNode: Node = this.headNodes.pop();
                     document.head.removeChild(tempNode);
                 }
-                let headList: NodeListOf<HTMLHeadElement> = el.getElementsByTagName("head");
+                let headList: HTMLCollectionOf<HTMLHeadElement> = el.getElementsByTagName("head");
                 if (headList && headList.length > 0) {
                     let head: HTMLHeadElement = headList[0];
                     this.headNodes = ParseElement(head, document.head);
@@ -215,6 +216,7 @@ module powerbi.extensibility.visual {
             // User-selected Format option styles
             let css = document.createElement("style");
             css.type = "text/css";
+            // eslint-disable-next-line powerbi-visuals/no-inner-outer-html
             css.innerHTML = ".pvtVal { font-size: " + this.settings_rpivottable_params.fontSize + ";} " +
                 ".pvtAttr { font-size: " + this.settings_rpivottable_params.fontSize + ";} " +
                 ".pvtTotal { font-size: " + this.settings_rpivottable_params.fontSize + ";} " +
@@ -231,7 +233,7 @@ module powerbi.extensibility.visual {
                 let tempNode: Node = this.bodyNodes.pop();
                 this.rootElement.removeChild(tempNode);
             }
-            let bodyList: NodeListOf<HTMLBodyElement> = el.getElementsByTagName("body");
+            let bodyList: HTMLCollectionOf<HTMLBodyElement> = el.getElementsByTagName("body");
             if (bodyList && bodyList.length > 0) {
                 let body: HTMLBodyElement = bodyList[0];
                 this.bodyNodes = ParseElement(body, this.rootElement);
@@ -240,7 +242,34 @@ module powerbi.extensibility.visual {
             RunHTMLWidgetRenderer((config) => {
                 // console.log(config);
                 this.keepSettings(JSON.stringify(config));
+
+                // Unescape HTML entities after rendering
+                this.unescapeHTMLEntities();
             });
+        }
+
+        private unescapeHTMLEntities(): void {
+            // Function to recursively walk through all text nodes and unescape HTML entities
+            const unescapeTextNodes = (node: Node) => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    // Only process text nodes that contain HTML entities
+                    if (node.textContent && /&#\d+;/.test(node.textContent)) {
+                        const div = document.createElement('div');
+                        // eslint-disable-next-line powerbi-visuals/no-inner-outer-html
+                        div.innerHTML = node.textContent;
+                        node.textContent = div.textContent;
+                    }
+                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                    // Recursively process child nodes
+                    const childNodes = node.childNodes;
+                    for (let i = 0; i < childNodes.length; i++) {
+                        unescapeTextNodes(childNodes[i]);
+                    }
+                }
+            };
+
+            // Process all body nodes
+            this.bodyNodes.forEach(node => unescapeTextNodes(node));
         }
 
         private static parseSettings(dataView: DataView): VisualSettings {
