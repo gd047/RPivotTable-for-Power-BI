@@ -1,7 +1,9 @@
 {
   "name": "visual",
   "devDependencies": {
+    "adm-zip": "^0.5.16",
     "powerbi-visuals-api": "~1.13.0",
-    "powerbi-visuals-utils-dataviewutils": "1.2.0"
+    "powerbi-visuals-utils-dataviewutils": "1.2.0",
+    "typescript": "^4.9.5"
   }
 }

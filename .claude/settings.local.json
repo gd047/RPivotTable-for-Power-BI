@@ -1,13 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "WebSearch",
-      "Bash(pbiviz package:*)",
-      "Bash(npm run build:*)",
-      "Bash(npm run:*)",
-      "Bash(dir:*)",
-      "Bash(npm install)",
-      "Bash(unzip:*)"
+      "Bash(python3:*)",
+      "Bash(node update-pbiviz.js:*)",
+      "Bash(awk:*)"
     ],
     "deny": [],
     "ask": []
