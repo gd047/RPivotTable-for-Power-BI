@@ -3,7 +3,12 @@
     "allow": [
       "Bash(python3:*)",
       "Bash(node update-pbiviz.js:*)",
-      "Bash(awk:*)"
+      "Bash(awk:*)",
+      "Bash(pbiviz new:*)",
+      "Bash(pbiviz package:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:community.fabric.microsoft.com)"
     ],
     "deny": [],
     "ask": []
